@@ -1,4 +1,4 @@
-title: ESP32 Entity Selector
+title: My Dashboard
 views:
   - title: Entity Manager
     path: esp32-manager
