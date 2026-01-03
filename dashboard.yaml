@@ -1,10 +1,556 @@
-title: My Dashboard
+title: ESP32 Entity Selector
 views:
-  - title: Home
-    path: home
+  - title: Entity Manager
+    path: esp32-manager
+    icon: mdi:chip
     cards:
-      - type: entities
-        title: Switches
-        entities:
-          - switch.light_1
-          - switch.light_2
+      - type: custom:mod-card
+        style: |
+          ha-card {
+            background: transparent !important;
+            box-shadow: none !important;
+            border: 1px solid rgba(0,0,0,0.12) !important;
+            border-radius: 8px !important;
+            margin-bottom: 24px;
+            overflow: hidden;
+          }
+        card:
+          type: vertical-stack
+          cards:
+            - type: custom:button-card
+              name: 🔌 Switches
+              show_label: true
+              label: |
+                [[[ 
+                  const parts = [
+                    states['input_text.esp32_selected_switches_1'].state,
+                    states['input_text.esp32_selected_switches_2'].state,
+                    states['input_text.esp32_selected_switches_3'].state,
+                    states['input_text.esp32_selected_switches_4'].state,
+                    states['input_text.esp32_selected_switches_5'].state
+                  ];
+                  const all = parts.join(',').replace(/,+/g, ',').replace(/^,|,$/g, '');
+                  const count = all ? all.split(',').filter(s => s.trim()).length : 0;
+                  return count > 0 ? `${count} đã chọn` : 'Chưa chọn';
+                ]]]
+              styles:
+                card:
+                  - background: transparent
+                  - border-radius: 0
+                  - padding: 16px
+                  - border: none
+                  - height: auto
+                  - box-shadow: none
+                name:
+                  - font-size: 18px
+                  - font-weight: 700
+                  - color: '#2c3e50'
+                  - text-align: left
+                  - justify-self: start
+                label:
+                  - font-size: 13px
+                  - color: '#7f8c8d'
+                  - text-align: left
+                  - margin-top: 2px
+                  - justify-self: start
+                grid:
+                  - grid-template-areas: '"n clear" "l clear"'
+                  - grid-template-columns: 1fr auto
+                  - grid-template-rows: auto auto
+                  - align-items: center
+                custom_fields:
+                  clear:
+                    - justify-self: end
+                    - align-self: center
+              custom_fields:
+                clear:
+                  card:
+                    type: custom:button-card
+                    icon: mdi:delete-sweep
+                    show_name: false
+                    show_icon: true
+                    styles:
+                      card:
+                        - background: '#e74c3c'
+                        - border-radius: 50%
+                        - height: 28px
+                        - width: 28px
+                        - box-shadow: none
+                        - border: none
+                        - padding: 0
+                      icon:
+                        - color: white
+                        - width: 16px
+                        - height: 16px
+                    tap_action:
+                      action: call-service
+                      service: script.esp32_clear_switches
+                      confirmation:
+                        text: Xóa tất cả Switches đã chọn?
+              tap_action:
+                action: none
+            - type: custom:mod-card
+              style: |
+                ha-card {
+                  max-height: 300px;
+                  overflow-y: auto;
+                  overflow-x: hidden;
+                  background: transparent !important;
+                  border-radius: 0;
+                  padding: 0;
+                  box-shadow: none !important;
+                  border: none !important;
+                  margin: 0 !important;
+                }
+                ha-card::-webkit-scrollbar {
+                  width: 6px;
+                }
+                ha-card::-webkit-scrollbar-track {
+                  background: transparent;
+                  border-radius: 10px;
+                }
+                ha-card::-webkit-scrollbar-thumb {
+                  background: rgba(0,0,0,0.15);
+                  border-radius: 10px;
+                }
+                ha-card::-webkit-scrollbar-thumb:hover {
+                  background: rgba(0,0,0,0.25);
+                }
+                hui-entities-card {
+                  background: transparent !important;
+                  box-shadow: none !important;
+                }
+                hui-entities-card $ {
+                  ha-card {
+                    background: transparent !important;
+                  }
+                }
+                #states {
+                  background: transparent !important;
+                }
+                #states > * {
+                  background: transparent !important;
+                }
+              card:
+                type: custom:auto-entities
+                card:
+                  type: entities
+                  card_mod:
+                    style: |
+                      ha-card {
+                        background: transparent !important;
+                        box-shadow: none !important;
+                        border: none !important;
+                      }
+                      #states {
+                        background: transparent !important;
+                      }
+                      #states > * {
+                        background: transparent !important;
+                      }
+                filter:
+                  include:
+                    - domain: switch
+                      options:
+                        type: custom:button-card
+                        entity: this.entity_id
+                        show_state: false
+                        show_name: true
+                        show_icon: true
+                        size: 25%
+                        styles:
+                          card:
+                            - height: 50px
+                            - border-radius: 0
+                            - background: transparent
+                            - border: none
+                            - transition: all 0.2s ease
+                            - margin: 0
+                            - box-shadow: none
+                            - display: flex
+                            - align-items: center
+                          grid:
+                            - grid-template-areas: '"i n check"'
+                            - grid-template-columns: 50px 1fr 50px
+                            - padding: 0 8px
+                            - align-items: center
+                            - height: 50px
+                          icon:
+                            - color: '#95a5a6'
+                            - width: 22px
+                            - height: 22px
+                            - display: flex
+                            - align-items: center
+                            - justify-content: center
+                          name:
+                            - justify-self: start
+                            - font-weight: 500
+                            - font-size: 14px
+                            - color: '#2c3e50'
+                            - line-height: 50px
+                            - display: flex
+                            - align-items: center
+                          custom_fields:
+                            check:
+                              - justify-self: center
+                              - display: flex
+                              - align-items: center
+                              - height: 50px
+                        custom_fields:
+                          check:
+                            card:
+                              type: custom:button-card
+                              entity: input_text.esp32_selected_switches_1
+                              show_name: false
+                              show_state: false
+                              icon: |
+                                [[[ 
+                                  const parts = [
+                                    states['input_text.esp32_selected_switches_1'].state,
+                                    states['input_text.esp32_selected_switches_2'].state,
+                                    states['input_text.esp32_selected_switches_3'].state,
+                                    states['input_text.esp32_selected_switches_4'].state,
+                                    states['input_text.esp32_selected_switches_5'].state
+                                  ];
+                                  const all = parts.join(',').replace(/,+/g, ',').replace(/^,|,$/g, '');
+                                  const selected = all ? all.split(',').map(s => s.trim()) : [];
+                                  return selected.includes(variables.main_entity) ? 'mdi:checkbox-marked-circle' : 'mdi:checkbox-blank-circle-outline';
+                                ]]]
+                              styles:
+                                card:
+                                  - background: none
+                                  - box-shadow: none
+                                  - height: 50px
+                                  - width: 50px
+                                  - display: flex
+                                  - align-items: center
+                                  - justify-content: center
+                                  - border: none
+                                icon:
+                                  - width: 26px
+                                  - height: 26px
+                                  - color: |
+                                      [[[ 
+                                        const parts = [
+                                          states['input_text.esp32_selected_switches_1'].state,
+                                          states['input_text.esp32_selected_switches_2'].state,
+                                          states['input_text.esp32_selected_switches_3'].state,
+                                          states['input_text.esp32_selected_switches_4'].state,
+                                          states['input_text.esp32_selected_switches_5'].state
+                                        ];
+                                        const all = parts.join(',').replace(/,+/g, ',').replace(/^,|,$/g, '');
+                                        const selected = all ? all.split(',').map(s => s.trim()) : [];
+                                        return selected.includes(variables.main_entity) ? '#27ae60' : '#bdc3c7';
+                                      ]]]
+                                  - transition: all 0.2s ease
+                              tap_action:
+                                action: call-service
+                                service: script.esp32_toggle_entity
+                                service_data:
+                                  entity_id: '[[[ return variables.main_entity; ]]]'
+                                  entity_type: switch
+                              variables:
+                                main_entity: this.entity_id
+                        state:
+                          - operator: template
+                            value: |
+                              [[[ 
+                                const parts = [
+                                  states['input_text.esp32_selected_switches_1'].state,
+                                  states['input_text.esp32_selected_switches_2'].state,
+                                  states['input_text.esp32_selected_switches_3'].state,
+                                  states['input_text.esp32_selected_switches_4'].state,
+                                  states['input_text.esp32_selected_switches_5'].state
+                                ];
+                                const all = parts.join(',').replace(/,+/g, ',').replace(/^,|,$/g, '');
+                                const selected = all ? all.split(',').map(s => s.trim()) : [];
+                                return selected.includes(entity.entity_id);
+                              ]]]
+                            styles:
+                              card:
+                                - background: transparent
+                                - border-left: 3px solid '#27ae60'
+                              icon:
+                                - color: '#27ae60'
+                              name:
+                                - color: '#27ae60'
+                                - font-weight: 600
+                        variables:
+                          main_entity: this.entity_id
+                sort:
+                  method: name
+      - type: custom:mod-card
+        style: |
+          ha-card {
+            background: transparent !important;
+            box-shadow: none !important;
+            border: 1px solid rgba(0,0,0,0.12) !important;
+            border-radius: 8px !important;
+            margin-bottom: 24px;
+            overflow: hidden;
+          }
+        card:
+          type: vertical-stack
+          cards:
+            - type: custom:button-card
+              name: 📊 Sensors
+              show_label: true
+              label: |
+                [[[ 
+                  const parts = [
+                    states['input_text.esp32_selected_sensors_1'].state,
+                    states['input_text.esp32_selected_sensors_2'].state,
+                    states['input_text.esp32_selected_sensors_3'].state,
+                    states['input_text.esp32_selected_sensors_4'].state,
+                    states['input_text.esp32_selected_sensors_5'].state
+                  ];
+                  const all = parts.join(',').replace(/,+/g, ',').replace(/^,|,$/g, '');
+                  const count = all ? all.split(',').filter(s => s.trim()).length : 0;
+                  return count > 0 ? `${count} đã chọn` : 'Chưa chọn';
+                ]]]
+              styles:
+                card:
+                  - background: transparent
+                  - border-radius: 0
+                  - padding: 16px
+                  - border: none
+                  - height: auto
+                  - box-shadow: none
+                name:
+                  - font-size: 18px
+                  - font-weight: 700
+                  - color: '#2c3e50'
+                  - text-align: left
+                  - justify-self: start
+                label:
+                  - font-size: 13px
+                  - color: '#7f8c8d'
+                  - text-align: left
+                  - margin-top: 2px
+                  - justify-self: start
+                grid:
+                  - grid-template-areas: '"n clear" "l clear"'
+                  - grid-template-columns: 1fr auto
+                  - grid-template-rows: auto auto
+                  - align-items: center
+                custom_fields:
+                  clear:
+                    - justify-self: end
+                    - align-self: center
+              custom_fields:
+                clear:
+                  card:
+                    type: custom:button-card
+                    icon: mdi:delete-sweep
+                    show_name: false
+                    show_icon: true
+                    styles:
+                      card:
+                        - background: '#e74c3c'
+                        - border-radius: 50%
+                        - height: 28px
+                        - width: 28px
+                        - box-shadow: none
+                        - border: none
+                        - padding: 0
+                      icon:
+                        - color: white
+                        - width: 16px
+                        - height: 16px
+                    tap_action:
+                      action: call-service
+                      service: script.esp32_clear_sensors
+                      confirmation:
+                        text: Xóa tất cả Sensors đã chọn?
+              tap_action:
+                action: none
+            - type: custom:mod-card
+              style: |
+                ha-card {
+                  max-height: 300px;
+                  overflow-y: auto;
+                  overflow-x: hidden;
+                  background: transparent !important;
+                  border-radius: 0;
+                  padding: 0;
+                  box-shadow: none !important;
+                  border: none !important;
+                  margin: 0 !important;
+                }
+                ha-card::-webkit-scrollbar {
+                  width: 6px;
+                }
+                ha-card::-webkit-scrollbar-track {
+                  background: transparent;
+                  border-radius: 10px;
+                }
+                ha-card::-webkit-scrollbar-thumb {
+                  background: rgba(0,0,0,0.15);
+                  border-radius: 10px;
+                }
+                ha-card::-webkit-scrollbar-thumb:hover {
+                  background: rgba(0,0,0,0.25);
+                }
+                hui-entities-card {
+                  background: transparent !important;
+                  box-shadow: none !important;
+                }
+                hui-entities-card $ {
+                  ha-card {
+                    background: transparent !important;
+                  }
+                }
+                #states {
+                  background: transparent !important;
+                }
+                #states > * {
+                  background: transparent !important;
+                }
+              card:
+                type: custom:auto-entities
+                card:
+                  type: entities
+                  card_mod:
+                    style: |
+                      ha-card {
+                        background: transparent !important;
+                        box-shadow: none !important;
+                        border: none !important;
+                      }
+                      #states {
+                        background: transparent !important;
+                      }
+                      #states > * {
+                        background: transparent !important;
+                      }
+                filter:
+                  include:
+                    - domain: sensor
+                      options:
+                        type: custom:button-card
+                        entity: this.entity_id
+                        show_state: false
+                        show_name: true
+                        show_icon: true
+                        size: 25%
+                        styles:
+                          card:
+                            - height: 50px
+                            - border-radius: 0
+                            - background: transparent
+                            - border: none
+                            - transition: all 0.2s ease
+                            - margin: 0
+                            - box-shadow: none
+                            - display: flex
+                            - align-items: center
+                          grid:
+                            - grid-template-areas: '"i n check"'
+                            - grid-template-columns: 50px 1fr 50px
+                            - padding: 0 8px
+                            - align-items: center
+                            - height: 50px
+                          icon:
+                            - color: '#95a5a6'
+                            - width: 22px
+                            - height: 22px
+                            - display: flex
+                            - align-items: center
+                            - justify-content: center
+                          name:
+                            - justify-self: start
+                            - font-weight: 500
+                            - font-size: 14px
+                            - color: '#2c3e50'
+                            - line-height: 50px
+                            - display: flex
+                            - align-items: center
+                          custom_fields:
+                            check:
+                              - justify-self: center
+                              - display: flex
+                              - align-items: center
+                              - height: 50px
+                        custom_fields:
+                          check:
+                            card:
+                              type: custom:button-card
+                              entity: input_text.esp32_selected_sensors_1
+                              show_name: false
+                              show_state: false
+                              icon: |
+                                [[[ 
+                                  const parts = [
+                                    states['input_text.esp32_selected_sensors_1'].state,
+                                    states['input_text.esp32_selected_sensors_2'].state,
+                                    states['input_text.esp32_selected_sensors_3'].state,
+                                    states['input_text.esp32_selected_sensors_4'].state,
+                                    states['input_text.esp32_selected_sensors_5'].state
+                                  ];
+                                  const all = parts.join(',').replace(/,+/g, ',').replace(/^,|,$/g, '');
+                                  const selected = all ? all.split(',').map(s => s.trim()) : [];
+                                  return selected.includes(variables.main_entity) ? 'mdi:checkbox-marked-circle' : 'mdi:checkbox-blank-circle-outline';
+                                ]]]
+                              styles:
+                                card:
+                                  - background: none
+                                  - box-shadow: none
+                                  - height: 50px
+                                  - width: 50px
+                                  - display: flex
+                                  - align-items: center
+                                  - justify-content: center
+                                  - border: none
+                                icon:
+                                  - width: 26px
+                                  - height: 26px
+                                  - color: |
+                                      [[[ 
+                                        const parts = [
+                                          states['input_text.esp32_selected_sensors_1'].state,
+                                          states['input_text.esp32_selected_sensors_2'].state,
+                                          states['input_text.esp32_selected_sensors_3'].state,
+                                          states['input_text.esp32_selected_sensors_4'].state,
+                                          states['input_text.esp32_selected_sensors_5'].state
+                                        ];
+                                        const all = parts.join(',').replace(/,+/g, ',').replace(/^,|,$/g, '');
+                                        const selected = all ? all.split(',').map(s => s.trim()) : [];
+                                        return selected.includes(variables.main_entity) ? '#3498db' : '#bdc3c7';
+                                      ]]]
+                                  - transition: all 0.2s ease
+                              tap_action:
+                                action: call-service
+                                service: script.esp32_toggle_entity
+                                service_data:
+                                  entity_id: '[[[ return variables.main_entity; ]]]'
+                                  entity_type: sensor
+                              variables:
+                                main_entity: this.entity_id
+                        state:
+                          - operator: template
+                            value: |
+                              [[[ 
+                                const parts = [
+                                  states['input_text.esp32_selected_sensors_1'].state,
+                                  states['input_text.esp32_selected_sensors_2'].state,
+                                  states['input_text.esp32_selected_sensors_3'].state,
+                                  states['input_text.esp32_selected_sensors_4'].state,
+                                  states['input_text.esp32_selected_sensors_5'].state
+                                ];
+                                const all = parts.join(',').replace(/,+/g, ',').replace(/^,|,$/g, '');
+                                const selected = all ? all.split(',').map(s => s.trim()) : [];
+                                return selected.includes(entity.entity_id);
+                              ]]]
+                            styles:
+                              card:
+                                - background: transparent
+                                - border-left: 3px solid '#3498db'
+                              icon:
+                                - color: '#3498db'
+                              name:
+                                - color: '#3498db'
+                                - font-weight: 600
+                        variables:
+                          main_entity: this.entity_id
+                sort:
+                  method: name
