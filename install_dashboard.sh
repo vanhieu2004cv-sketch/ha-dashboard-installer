@@ -6,10 +6,10 @@ CONFIG_FILE="$CONFIG_DIR/configuration.yaml"
 
 echo "▶ Copy dashboard.yaml"
 wget -q -O "$DASHBOARD_FILE" \
-https://raw.githubusercontent.com/USER/REPO/main/dashboard.yaml
+https://raw.githubusercontent.com/vanhieu2004cv-sketch/ha-dashboard-installer/main/dashboard.yaml
 
-# Nếu chưa có lovelace dashboards thì thêm
-if ! grep -q "dashboards:" "$CONFIG_FILE"; then
+# Kiểm tra xem cấu hình my-dashboard đã tồn tại chưa
+if ! grep -q "my-dashboard:" "$CONFIG_FILE"; then
   echo "▶ Add lovelace dashboard config"
   cat <<EOF >> "$CONFIG_FILE"
 
@@ -23,7 +23,7 @@ lovelace:
       filename: dashboard.yaml
 EOF
 else
-  echo "ℹ Lovelace dashboards already exists, skip"
+  echo "ℹ Dashboard my-dashboard already exists, skip"
 fi
 
 echo "▶ Restart Home Assistant"
