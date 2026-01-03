@@ -1,0 +1,10 @@
+title: My Dashboard
+views:
+  - title: Home
+    path: home
+    cards:
+      - type: entities
+        title: Switches
+        entities:
+          - switch.light_1
+          - switch.light_2
